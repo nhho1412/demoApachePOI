@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -40,14 +42,38 @@ public class WriteExcel {
 
 	private static List<Employee> getEmployees() {
 		List<Employee> employees = new ArrayList<Employee>();
+		
 		for (int i = 1; i <= 50; i++) {
-			employees.add(new Employee(i, "firstName" + i, "lastName" + i, "Hue", new BigDecimal(500000 * i),
-					new BigDecimal(100000 * i)));
+			employees.add(getRandomEmployee(i));
 		}
 
 		return employees;
 	}
 
+	private static Employee getRandomEmployee(int i) {
+		Random rd = new Random();
+		
+		Employee employee = new Employee();
+		
+		employee.setId(i);
+		
+		List<String> firstNameList = Arrays.asList("Hổ", "Huyền", "Hoa", "Huệ", "Cúc", "Lan", "Lộc", "Ngũ", "Tứ", "Tam", "Nhị");
+		employee.setFirstName(firstNameList.get(rd.nextInt(firstNameList.size())));
+		
+		List<String> lastNameList = Arrays.asList("Nguyễn", "Trần", "Phạm", "Huỳnh", "Hoàng", "Lê", "Đào");
+		List<String> middleNameList = Arrays.asList("Công", "Văn", "Huỳnh", "Nhã", "Như", "Ngọc", "Gia");
+		employee.setLastName(lastNameList.get(rd.nextInt(lastNameList.size())) + " " + middleNameList.get(rd.nextInt(middleNameList.size())));
+		
+		List<String> addressList = Arrays.asList("Huế", "Đà Nẵng", "Hà Nội", "Quảng Nam", "Hồ Chí Minh", "Đồng Nai", "Vũng Tàu", "Hải Dương", "Quảng Ninh");
+		employee.setAddress(addressList.get(rd.nextInt(addressList.size())));
+		
+		employee.setSalary(new BigDecimal(500000 * i));
+		employee.setAllowance(new BigDecimal(100000 * i));
+		employee.setTotalMoney(employee.getSalary().add(employee.getAllowance()));
+		
+		return employee;
+	}
+	
 	public static void write(String fileExcelPath, List<Employee> employees) throws FileNotFoundException, IOException {
 		Workbook workbook = getWorkbook(fileExcelPath);
 
@@ -66,6 +92,7 @@ public class WriteExcel {
 
 		autoSizeColumn(sheet);
 		saveExcel(workbook, fileExcelPath);
+		workbook.close();
 	}
 
 	private static void autoSizeColumn(Sheet sheet) {
@@ -182,30 +209,37 @@ public class WriteExcel {
 
 		Cell cell = row.createCell(COLUMN_INDEX_ID);
 		cell.setCellStyle(cellStyle);
+		cell.setCellType(CellType.NUMERIC);
 		cell.setCellValue(employee.getId());
 
 		cell = row.createCell(COLUMN_INDEX_FIRST_NAME);
 		cell.setCellStyle(cellStyle);
+		cell.setCellType(CellType.STRING);
 		cell.setCellValue(employee.getFirstName());
 
 		cell = row.createCell(COLUMN_INDEX_LAST_NAME);
 		cell.setCellStyle(cellStyle);
+		cell.setCellType(CellType.STRING);
 		cell.setCellValue(employee.getLastName());
 
 		cell = row.createCell(COLUMN_INDEX_ADDRESS);
 		cell.setCellStyle(cellStyle);
+		cell.setCellType(CellType.STRING);
 		cell.setCellValue(employee.getAddress());
 
 		cell = row.createCell(COLUMN_INDEX_SALARY);
 		cell.setCellStyle(cellStyle);
+		cell.setCellType(CellType.NUMERIC);
 		cell.setCellValue(employee.getSalary().doubleValue());
 
 		cell = row.createCell(COLUMN_INDEX_ALLOWANCE);
 		cell.setCellStyle(cellStyle);
+		cell.setCellType(CellType.NUMERIC);
 		cell.setCellValue(employee.getAllowance().doubleValue());
 
 		cell = row.createCell(COLUMN_INDEX_TOTAL_MONEY);
 		cell.setCellStyle(cellStyle);
+		cell.setCellType(CellType.NUMERIC);
 		cell.setCellValue(employee.getTotalMoney().doubleValue());
 	}
 
